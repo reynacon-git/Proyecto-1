@@ -1,3 +1,722 @@
+
+Índice
+Limpieza de datos
+Carga de datos
+Duplicaciones y valores ausentes
+Tipo de datos
+Creación de columnas
+Análisis de datos
+Juegos por año
+Ventas
+Rentabilidad
+Perfil de usuario para cada región
+Plataformas principales
+Generos principales
+Clasificación ESRB
+Prueba de hipótesis
+Calificaciones promedio de los usuarios para las plataformas Xbox One y PC
+calificaciones promedio de los usuarios para los géneros de Acción y Deportes
+5. Conclusión general
+
+Limpieza de datos
+importar  pandas  como  pd 
+importar  numpy  como  np 
+importar  scipy.stats  como  sts 
+importar  seaborn  como  sns 
+importar  matplotlib.pyplot  como  plt
+juegos  =  pd . read_csv ( "/datasets/juegos.csv" ) 
+juegos . info ()
+<clase 'pandas.core.frame.DataFrame'>
+RangeIndex: 16715 entradas, 0 a 16714
+Columnas de datos (11 columnas en total):
+ # Columna Conteo no nulo Dtype  
+--- ------ -------------- -----  
+ 0 Nombre 16713 objeto no nulo
+ 1 Plataforma 16715 objeto no nulo
+ 2 Año de lanzamiento 16446 float64 no nulo
+ 3 Género 16713 objeto no nulo
+ 4 NA_sales 16715 float64 no nulo
+ 5 EU_sales 16715 float64 no nulo
+ 6 JP_sales 16715 float64 no nulo
+ 7 Other_sales 16715 float64 no nulo
+ 8 Critic_Score 8137 flotante no nulo64
+ 9 User_Score 10014 objeto no nulo
+ 10 Calificación 9949 objeto no nulo
+tipos de datos: float64(6), object(5)
+Uso de memoria: 1,4+ MB
+juegos . columnas  =  juegos . columnas . str . lower ()
+juegos [ ' año_de_lanzamiento' ] .isna () .sum ( )
+269
+juegos =  juegos . dropna ( subconjunto = [ 'año_de_lanzamiento' ])
+
+juegos [ ' año_de_lanzamiento' ]  =  juegos [ 'año_de_lanzamiento' ] .astype ( "int" )
+
+imprimir ( juegos . cabeza ())
+                       nombre plataforma año_de_lanzamiento género na_ventas \
+0 Deportes de Wii Deportes de Wii 2006 41.36   
+1 Super Mario Bros. NES 1985 Plataforma 29.08   
+2 Mario Kart Wii Wii 2008 Carreras 15.68   
+3 Wii Sports Resort Wii 2009 Deportes 15.61   
+4 Pokémon Rojo/Pokémon Azul GB 1996 Juego de rol 11.27   
+
+   eu_sales jp_sales other_sales puntuación crítica puntuación del usuario calificación  
+0 28,96 3,77 8,45 76,0 8 E  
+1 3,58 6,81 0,77 NaN NaN NaN  
+2 12,76 3,79 3,29 82,0 8,3 E  
+3 10,93 3,28 2,95 80,0 8 E  
+4 8,89 10,22 1,00 NaN NaN NaN  
+juegos [ 'año_de_lanzamiento' ]  =  pd . to_datetime ( juegos [ 'año_de_lanzamiento' ],  formato = '%Y' ) . dt . year 
+print ( juegos [ 'año_de_lanzamiento' ] . dtypes )
+int64
+juegos [ "critic_score" ] = juegos [ "critic_score" ] . fillna ( 0 ) 
+juegos [ "critic_score" ] = juegos [ "critic_score" ] . astype ( int )
+
+juegos [ "puntuación_usuario" ] = juegos [ "puntuación_usuario" ] . fillna ( 0 ) 
+juegos [ "puntuación_usuario" ] = juegos [ "puntuación_usuario" ] . replace ( "tbd" ,  0 ) 
+juegos [ "puntuación_usuario" ] = juegos [ "puntuación_usuario" ] . astype ( float )
+
+juegos [ "clasificación" ] = juegos [ "clasificación" ] . fillna ( " " )
+
+juegos  [ " género" ]  =  juegos [ "género" ] .fillna ( " " )
+Se modificaron las columnas: "critic_score" y "user_score" tenían valores ausentes, mediante el método fillna, dichos valores fueron cambiados por cero, en la columna user_score en algunas celdas estaba la abreviatura TBD, que fue también reemplazada por ceros y esta columna paso de ser object a ser de tipo float.
+
+la columna critic_score igualmente fue cambiada de float a int.
+
+La columna yer_of_release. los valores ausentes fueron eliminados mediente dropna, ya que eran valores ausentes aleatorios y no hay un gran riesgo de perder información valiosa. y paso de ser float a int.
+
+Por ultimo la columna "rating" los valores ausentes se dejaron en blanco.
+
+juegos  [ "ventas_totales" ]  =  juegos [ "ventas_na" ]  +  juegos [ "ventas_jp" ]  +  juegos  [ "ventas_eu" ]  +  juegos [ "ventas_otras" ]
+
+imprimir ( juegos . cabeza ())
+                       nombre plataforma año_de_lanzamiento género na_ventas \
+0 Deportes de Wii Deportes de Wii 2006 41.36   
+1 Super Mario Bros. NES 1985 Plataforma 29.08   
+2 Mario Kart Wii Wii 2008 Carreras 15.68   
+3 Wii Sports Resort Wii 2009 Deportes 15.61   
+4 Pokémon Rojo/Pokémon Azul GB 1996 Juego de rol 11.27   
+
+   eu_sales jp_sales other_sales puntuación crítica puntuación del usuario calificación \
+0 28,96 3,77 8,45 76 8,0 E   
+1 3,58 6,81 0,77 0 0,0          
+2 12,76 3,79 3,29 82 8,3 E   
+3 10,93 3,28 2,95 80 8,0 E   
+4 8,89 10,22 1,00 0 0,0          
+
+   ventas totales  
+0 82,54  
+1 40,24  
+2 35,52  
+3 32,77  
+4 31.38  
+Análisis de datos
+juegos_por_ano  =  juegos [ 'año_de_lanzamiento' ] . valor_cuentas () . índice_clasificación ()
+
+imprimir ( juegos_por_ano )
+1980 9
+1981 46
+1982 36
+1983 17
+1984 14
+1985 14
+1986 21
+1987 16
+1988 15
+1989 17
+1990 16
+1991 41
+1992 43
+1993 62
+1994 121
+1995 219
+1996 263
+1997 289
+1998 379
+1999 338
+2000 350
+2001 482
+2002 829
+2003 775
+2004 762
+2005 939
+2006 1006
+2007 1197
+2008 1427
+2009 1426
+2010 1255
+2011 1136
+2012 653
+2013 544
+2014 581
+2015 606
+2016 502
+Nombre: year_of_release, tipo de datos: int64
+color  =  "rojo" 
+juegos_por_ano . plot ( tipo = 'barra' , color = color ,  tamaño de figura = ( 10 ,  6 )) 
+plt . title ( 'Número de Juegos Lanzados por Año' ) 
+plt . xlabel ( 'Año' ) 
+plt . ylabel ( 'Cantidad de Juegos' ) 
+plt . espectáculo ()
+No se ha proporcionado ninguna descripción para esta imagen.
+Es significativo el incremento en la cantidad de juegos lanzados por año, estamos hablando que entre el primer año de registro que es 1980 a 2008 (que es el año con mayor número de lanzamiento) hay un incremento de más del 15.000%, y también es significativo el descenso para el periodo de 2016.
+
+ventas_totales_plataforma  =  games . groupby ( 'plataforma' )[ 'ventas_totales' ] . sum ()
+
+
+imprimir ( "Ventas totales por plataforma:" ) 
+imprimir ( ventas_totales_plataforma )
+Ventas totales por plataforma:
+plataforma
+2600 86,48
+3DO 0,10
+3DS 257,81
+15,95 dólares estadounidenses
+DS802.78
+GB 254.43
+312,88 libras esterlinas
+GC 196.73
+GEN 30.77
+GG0,04
+N64 218,01
+NES 251.05
+NG 1,44
+Código Penal 255.76
+PCFX0,03
+PS 727.58
+PS2 1233.56
+PS3 931.34
+PS4 314,14
+PSP289.53
+PSV53.81
+Sábado 33,59
+Escala de distribución de 1,86
+SNES 200.04
+TG16 0,16
+WS 1.42
+Wii 891.18
+WiiU 82.19
+X360 961,24
+251,57 dólares estadounidenses
+XOne 159,32
+Nombre: total_sales, tipo de dato: float64
+plataformas_top  =  ventas_totales_plataforma .sort_values ( ascending = False ) .head ( 5 ) .index .tolist ( )​​​
+
+plataformas_top_df  =  juegos [ juegos [ 'plataforma' ] . isin ( plataformas_top )]
+
+imprimir ( plataformas_top )
+['PS2', 'X360', 'PS3', 'Wii', 'DS']
+df_top5  =  games [ games [ 'plataforma' ] . isin ( plataformas_top )] 
+ventas_por_plataforma  =  df_top5 . groupby ( 'plataforma' )[ 'ventas_totales' ] . sum () . sort_values ​​( ascendente = False )
+
+color  =  "naranja" 
+ventas_por_plataforma . trama ( tipo = 'barra' ,  color  =  color ) 
+plt . título ( 'Ventas Totales por Plataforma Top 5' ) 
+plt . xlabel ( 'Plataforma' ) 
+plt . ylabel ( 'Ventas Totales' ) 
+plt . espectáculo ()
+No se ha proporcionado ninguna descripción para esta imagen.
+para  plataforma  en  juegos [ 'plataforma' ] . unico (): 
+    plataforma_df  =  juegos [ juegos [ 'plataforma' ]  ==  plataforma ] 
+    ventas_por_ano  =  plataforma_df . groupby ( 'año_de_lanzamiento' )[ 'ventas_totales' ] . suma () 
+    ventas_por_ano . trama ( tipo = 'línea' ) 
+    plt . title ( f 'Ventas por Año - Plataforma: { plataforma } ' )   # Ajusta el tamaño de la fuente 
+    plt . xlabel ( 'Año de Lanzamiento' ) 
+    plt . ylabel ( 'Ventas' ) 
+    plt . leyenda ( título = 'Región' ) 
+    plt . apretado_layout () 
+    plt . espectáculo ()
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+No se ha proporcionado ninguna descripción para esta imagen.
+games_filtro  =  juegos [( juegos [ 'año_de_lanzamiento' ]  >=  2013 )  &  ( juegos [ 'año_de_lanzamiento' ]  <=  2016 )]
+
+top_consolas  =  filtro_juegos [ ' plataforma ' ] .value_counts ( ) .head ( 5 ) .index
+
+juegos_filtro  =  juegos_filtro [ juegos_filtro [ 'plataforma' ] . isin ( top_consolas )]
+
+consolas_ventas  =  games_filtro .groupby ([ ' plataforma ' , 'año_de_lanzamiento' ])[ 'ventas_totales' ] .sum () .reset_index ( ) 
+
+pl . figura ( tamaño de figura = ( 12 ,  6 )) 
+sns . lineplot ( x = 'año_de_lanzamiento' ,  y = 'ventas_totales' ,  tono = 'plataforma' ,  datos = consolas_ventas ) 
+plt . title ( 'Ventas Totales por Plataforma (2013-2016)' ) 
+plt . xlabel ( 'Año' ) 
+plt . ylabel ( 'Ventas Totales' ) 
+plt . leyenda ( título = 'Plataforma' ) 
+plt . espectáculo ()
+No se ha proporcionado ninguna descripción para esta imagen.
+Podemos observar un patrón en las gráficas, de picos altos ya su vez descensos bruscos, la causa de estos descensos pueden ocurrir por el estreno de nuevas consolas, por ejemplo las PS, PS2, PS4, claramente su descenso ocurre cuando sale a la venta una nueva consola. Entonces las consolas que fueron creadas antes del 2000 al haber nuevas gráficas, con mejor tecnología, nuevos juegos tienden a dejar de venderse.
+
+plataformas_rentables  =  games . groupby ( 'plataforma' ) . agg ({ 'ventas_totales' :  'suma' ,  'puntuación_crítica' :  'media' }) . sort_values ​​( by = [ 'ventas_totales' ,  'puntuación_crítica' ],  ascending = False ) 
+print ( plataformas_rentables )
+          Puntuación crítica de ventas totales
+plataforma                           
+PS2 1233,56 41,189939
+X360 961,24 49,841721
+PS3 931.34 43.382083
+Wii 891,18 27,727838
+DS802.7821.272984
+PS 727,58 11,790756
+PS4 314,14 46,344388
+Estados Unidos de América 312,88 35,689273
+PSP289,53 25,813915
+3DS 257,81 21,773438
+Código postal 255,76 55,457680
+GB 254,43 0,000000
+251,57 61,466999
+NES 251.05 0.000000
+N64 218,01 0,000000
+SNES 200.04 0.000000
+GC 196,73 56,118081
+XOne 159,32 50,170040
+2600 86,48 0,000000
+WiiU 82,19 43,306122
+PSV53.8119.620047
+Sábado 33,59 0,000000
+GEN30.77 0.000000
+15,95 dólares estadounidenses 23,519231
+1,86 0,000000
+NG 1,44 0,000000
+WS 1,42 0,000000
+TG16 0,16 0,000000
+3DO 0,10 0,000000
+GG0,04 0,000000
+PCFX 0,03 0,000000
+Existe una evaluación positiva entre la puntuación promedio de los críticos y las ventas totales en algunas plataformas (como PC, X360, PS4). Esto sugiere que una buena recepción crítica puede impulsar las ventas. Plataformas como PS4 y XOne, con altas ventas totales y buena evaluación de crítica, podrían ser consideradas como plataformas potencialmente rentables.
+
+filtro_consolas  =  juegos [ juegos [ 'plataforma' ] . isin ([ 'PS2' ,  'X360' ,  'PS3' ,  'Wii' ])]
+
+
+sns . diagrama de caja ( 
+    x  =  "plataforma" , 
+    y  =  "ventas_totales" , 
+    datos = filtro_consolas )
+
+
+plt.xticks ( rotación = 45 ) plt.show ( )​​​
+
+No se ha proporcionado ninguna descripción para esta imagen.
+Q1  =  filtro_consolas [ 'ventas_totales' ] . cuantil ( 0.25 ) 
+Q3  =  filtro_consolas [ 'total_sales' ] . cuantil ( 0,75 ) 
+RIQ  =  Q3  -  Q1
+
+límite inferior  =  Q1  -  1,5  *  RIQ 
+límite superior  =  Q3  +  1,5  *  RIQ
+
+filtro_consolas_sin_atipicos  =  filtro_consolas [ 
+    ( filtro_consolas [ 'total_sales' ]  >=  límite_inferior )  & 
+    ( filtro_consolas [ 'total_ventas' ]  <=  límite_superior )]
+
+sns . boxplot ( 
+    x = "plataforma" , 
+    y = "ventas_totales" , 
+    datos = filtro_consolas_sin_atipicos )
+
+plt.xticks ( rotación = 45 ) plt.show ( )​​​
+
+No se ha proporcionado ninguna descripción para esta imagen.
+promedio_puntuaciones  =  juegos . groupby ( "plataforma" )[ "critic_score" ] . media () 
+ventas  =  juegos . groupby  ( "plataforma" )[ "total_sales" ] . suma () 
+df_concat  =  pd . concat ([ promedio_puntuaciones ,  ventas ],  eje = "columnas" )
+
+imprimir ( df_concat )
+          Puntuación crítica Ventas totales
+plataforma                           
+2600 0,000000 86,48
+3DO 0,000000 0,10
+3DS 21.773438 257.81
+23,519231 15,95 dólares
+DS 21.272984 802.78
+GB 0,000000 254,43
+GBA 35.689273 312.88
+Código GC 56.118081 196.73
+GEN 0,000000 30,77
+GG 0,000000 0,04
+N64 0,000000 218,01
+NES 0,000000 251,05
+NG 0,000000 1,44
+Código Postal 55.457680 255.76
+PCFX 0,000000 0,03
+PS 11.790756 727.58
+PS2 41.189939 1233.56
+PS3 43.382083 931.34
+PS4 46.344388 314.14
+PSP25.813915289.53
+PSV19.620047 53.81
+SAT 0,000000 33,59
+0,000000 1,86
+SNES 0,000000 200,04
+TG16 0,000000 0,16
+WS 0,000000 1,42
+Wii 27.727838 891.18
+WiiU 43.306122 82.19
+X360 49,841721 961,24
+61,466999 251,57
+XOne 50.170040 159.32
+No hay una evaluación directa evidente entre la puntuación media de los críticos y las ventas totales. Algunas plataformas con altas calificaciones (como PC) tienen ventas moderadas, mientras que otras con calificaciones bajas (como PS2) lideran en ventas
+
+x360  =  juegos [ juegos [ "plataforma" ]  ==  "X360" ] 
+x360 . loc [:,  'puntuación_total' ]  =  x360 [ 'puntuación_usuario' ]  +  x360 [ 'puntuación_crítica' ]
+
+sns . diagrama de dispersión ( x = 'puntuación_total' ,  y = 'ventas_total' ,  datos = x360 ) 
+plt . title ( 'Relación entre Puntuación Total y Ventas (Xbox 360)' ) 
+plt . xlabel ( 'Puntuación Total (Usuario + Crítico)' ) 
+plt . ylabel ( 'Ventas Totales' ) 
+plt . espectáculo ()
+
+correlacion  =  x360 [ 'puntuacion_total' ] . corr ( x360 [ 'total_sales' ]) 
+print ( 'Correlación:' ,  correlacion )
+/opt/conda/envs/python3/lib/python3.9/site-packages/pandas/core/indexing.py:1597: Advertencia de configuración con copia:
+Se está intentando establecer un valor en una copia de una porción de un DataFrame.
+Intente utilizar .loc[row_indexer,col_indexer] = value en su lugar
+
+Consulte las advertencias en la documentación: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self.obj[clave] = valor
+/opt/conda/envs/python3/lib/python3.9/site-packages/pandas/core/indexing.py:1676: Advertencia de configuración con copia:
+Se está intentando establecer un valor en una copia de una porción de un DataFrame.
+Intente utilizar .loc[row_indexer,col_indexer] = value en su lugar
+
+Consulte las advertencias en la documentación: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self._setitem_single_column(ilocs[0], valor, pi)
+No se ha proporcionado ninguna descripción para esta imagen.
+Correlación: 0.30797981145425
+Si bien existe una valoración positiva, no se puede afirmar que una puntuación alta garantiza unas ventas altas.
+
+unique_names  =  juegos [ 'nombre' ] .unique ( ) print ( unique_names )
+
+['Wii Sports', 'Super Mario Bros.', 'Mario Kart Wii' ...
+ 'El pájaro carpintero en Crazy Castle 5' 'LMA Manager 2007'
+ 'Haitaka no es psicodélica']
+ventas_por_juego  =  juegos . groupby ([ 'nombre' ,  'plataforma' ])[ 'total_sales' ] . suma () . restablecer_índice ()
+
+ventas_pivot  =  ventas_por_juego . tabla_pivote ( índice = 'nombre' ,  columnas = 'plataforma' ,  valores = 'ventas_totales' )
+distribución_por_genero  =  games [ 'genre' ] . value_counts () . sort_values ( ascendente = False )
+
+imprimir ( distribucion_por_genero )
+Acción 3307
+Deportes 2306
+Varios 1721
+Juego de rol 1481
+Tirador 1296
+Aventura 1293
+Carreras 1226
+Plataforma 878
+Simulación 857
+Lucha 837
+Estrategia 673
+Rompecabezas 569
+                   2
+Nombre: género, tipo: int64
+pl . figura ( figsize = ( 10 ,  6 )) 
+distribucion_por_genero . trama ( tipo = 'barra' ,  color = 'azul cielo' ) 
+plt . title ( 'Distribución de Videojuegos por Género' ) 
+plt . xlabel ( 'Género' ) 
+plt . ylabel ( 'Cantidad de Juegos' ) 
+plt . xticks ( rotación = 45 ,  ha = 'derecha' ) 
+plt . diseño_apretado ()
+
+plt . mostrar ()
+No se ha proporcionado ninguna descripción para esta imagen.
+Los géneros de Acción y Deportes son los más populares, mientras que otros géneros tienen una representación más limitada.
+
+Perfil de usuario para cada región
+ventas_por_plataforma_na  =  juegos . groupby ( 'plataforma' )[ 'na_sales' ] . suma () . sort_values ​​( ascendente = Falso )
+
+top_5_plataformas_na  =  ventas_por_plataforma_na . cabeza ( 5 )
+
+imprimir ( top_5_plataformas_na )
+plataforma
+X360 595,74
+PS2 572,92
+Wii 486,87
+PS3 390.13
+DS 380.31
+Nombre: na_sales, tipo d: float64
+ventas_por_plataforma_jp  =  games . groupby ( 'plataforma' )[ 'jp_sales' ] . sum () . sort_values ​​( ascendente = False )
+
+top_5_plataformas_jp  =  ventas_por_plataforma_jp . cabeza ( 5 )
+
+imprimir ( top_5_plataformas_jp )
+plataforma
+DS 175.02
+139,78 pesos
+PS2 137,54
+SNES 116.55
+3DS 100,62
+Nombre: jp_sales, tipo de dato: float64
+ventas_por_plataforma_eu  =  juegos . groupby ( 'plataforma' )[ 'eu_sales' ] . suma () . sort_values ​​( ascendente = Falso )
+
+top_5_plataformas_eu  =  ventas_por_plataforma_eu . cabeza ( 5 )
+
+imprimir ( top_5_plataformas_eu )
+plataforma
+PS2 332.63
+PS3 327.21
+X360 268,32
+Wii 258,32
+Sal 212.39
+Nombre: eu_sales, tipo de dato: float64
+Las variaciones en las cuotas de mercado de las plataformas de videojuegos entre las diferentes regiones reflejan una combinación de factores culturales, económicos y de marketing. Comprender estos patrones puede ser útil para las empresas de videojuegos a la hora de desarrollar estrategias de lanzamiento y marketing.
+
+generos_na  =  games . groupby ( 'genero' )[ 'na_ventas' ] . sum () . sort_values ​​( ascendente = False )
+
+top_5_generos_na  =  generos_na . cabeza ( 5 )
+
+imprimir ( top_5_generos_na )
+género
+Acción 863.17
+Deportes 671.20
+Tirador 584.83
+Plataforma 444.44
+Varios 399,57
+Nombre: na_sales, tipo d: float64
+generos_jp  =  games . groupby ( 'genero' )[ 'jp_sales' ] . sum () . sort_values ​​( ascendente = Falso )
+
+top_5_generos_jp  =  generos_jp . cabeza ( 5 )
+
+imprimir ( top_5_generos_jp )
+género
+Juego de rol 353.39
+Acción 160.14
+Deportes 134,93
+Plataforma 130.71
+Varios 107.02
+Nombre: jp_sales, tipo de dato: float64
+generos_eu  =  juegos . groupby ( 'género' )[ 'eu_sales' ] . suma () . sort_values ​​( ascendente = Falso )
+
+top_5_generos_eu  =  generos_eu . cabeza ( 5 )
+
+imprimir ( top_5_generos_eu )
+género
+Acción 510.99
+Deportes 371.33
+Tirador 314,52
+Carreras 234,49
+Varios 210,60
+Nombre: eu_sales, tipo de dato: float64
+na_ventas_rating  =  juegos . groupby ( 'rating' )[ 'na_ventas' ] . sum () . sort_values ​​( ascendente = False )
+
+total_na_ventas  =  juegos [ 'na_ventas' ] . suma ()
+
+pct_na_ventas_rating  =  ( na_ventas_rating  /  total_na_ventas )  *  100
+
+print ( "Ventas Totales de NA por Clasificación ESRB:" ) 
+print ( na_ventas_rating )
+
+print ( " \n Porcentaje de Ventas Totales de NA para Cada Clasificación ESRB:" ) 
+print ( pct_na_ventas_rating . round ( 1 ))
+Ventas Totales de NA por Clasificación ESRB:
+clasificación
+E1274.24
+        1227.62
+T747.60
+742,89 dólares
+E10+ 345,50
+KA2.56
+CE 1.53
+AO1.26
+RP0,00
+Nombre: na_sales, tipo d: float64
+
+Porcentaje de Ventas Totales de NA para Cada Clasificación ESRB:
+clasificación
+E 29.3
+        28.3
+T17.2
+M 17.1
+E10+ 8.0
+KA0.1
+CE 0.0
+AO 0.0
+RP0.0
+Nombre: na_sales, tipo d: float64
+jp_ventas_rating  =  juegos . groupby ( 'rating' )[ 'jp_ventas' ] . sum () . sort_values ​​( ascendente = False )
+
+total_jp_ventas  =  juegos [ 'jp_sales' ] . suma ()
+
+pct_jp_ventas_rating  =  ( jp_ventas_rating  /  total_jp_ventas )  *  100
+
+print ( "Ventas Totales de JP por Clasificación ESRB:" ) 
+print ( jp_ventas_rating )
+
+print ( " \n Porcentaje de Ventas Totales de JP para Cada Clasificación ESRB:" ) 
+print ( pct_jp_ventas_rating . round ( 1 ))
+Ventas Totales de JP por Clasificación ESRB:
+clasificación
+        836,77
+197,96 euros
+150,70 dólares
+M63,58
+E10+ 40,20
+KA1.46
+AO 0,00
+CE 0,00
+RP0,00
+Nombre: jp_sales, tipo de dato: float64
+
+Porcentaje de Ventas Totales de JP para Cada Clasificación ESRB:
+clasificación
+        64.8
+E 15.3
+T11.7
+M 4.9
+E10+ 3.1
+KA0.1
+AO 0.0
+CE 0.0
+RP0.0
+Nombre: jp_sales, tipo de dato: float64
+eu_ventas_rating  =  juegos . groupby ( 'calificación' )[ 'eu_sales' ] . suma () . sort_values ​​( ascendente = Falso )
+
+total_eu_ventas  =  juegos [ 'eu_sales' ] . suma ()
+
+pct_eu_ventas_rating  =  ( eu_ventas_rating  /  total_eu_ventas )  *  100
+
+print ( "Ventas Totales de EU por Clasificación ESRB:" ) 
+print ( eu_ventas_rating )
+
+print ( " \n Porcentaje de Ventas Totales de EU para Cada Clasificación ESRB:" ) 
+print ( pct_eu_ventas_rating . round ( 1 ))
+Ventas Totales de la UE por Clasificación ESRB:
+clasificación
+E703.87
+        610.18
+480,00 pesos
+T421.79
+E10+ 183,35
+AO 0,61
+KA0,27
+CE 0,11
+RP0,03
+Nombre: eu_sales, tipo de dato: float64
+
+Porcentaje de Ventas Totales de EU para Cada Clasificación ESRB:
+clasificación
+E 29.3
+        25.4
+M20.0
+T17.6
+E10+ 7,6
+AO 0.0
+KA0.0
+CE 0.0
+RP0.0
+Nombre: eu_sales, tipo de dato: float64
+Las clasificaciones ESRB desempeñan un papel importante en la industria de los videojuegos, influyendo en las decisiones de compra de los consumidores y, por lo tanto, en las ventas de los juegos. Las clasificaciones ESRB pueden limitar las opciones de marketing y publicidad para los juegos. . Los juegos con clasificaciones más altas pueden tener restricciones en ciertos canales de publicidad, lo que puede afectar su alcance.
+
+Como podemos observar en nuestros datos en Norte America hay mejores ventas a pesar de las clasificaciones, pero en Japon, se evidencia como en clasificaciones altas como "Mature" posee muy pocas ventas.
+
+Prueba de hipótesis
+Hipotesis Nula (H0): Las calificaciones promedio de los usuarios para las plataformas Xbox One y PC son iguales.
+
+Hipotesis Alternativa (H1):Las calificaciones promedio de los usuarios para las plataformas Xbox One y PC no son las mismas.
+
+alfa  =  0,05
+
+xbox  =  juegos [ juegos [ 'plataforma' ]  ==  'XOne' ] 
+pc  =  juegos [ juegos [ 'plataforma' ]  ==  'PC' ]
+
+promedio_xbox  =  4.8 
+promedio_pc  =  5.6
+
+resultados  =  sts . ttest_ind ( xbox [ "puntaje_usuario" ],  pc [ "puntaje_usuario" ])
+
+imprimir ( 'valor p:' , resultados . pvalue )
+
+si  resultados . pvalue  <  alpha  : 
+    print ( "Rechazamos la hipótesis nula" ) 
+else : 
+    print ( "No podemos rechazar la hipótesis nula" )
+valor p: 0.0007068097266608117
+Rechazamos la hipótesis nula
+xbox  =  juegos [ juegos [ 'plataforma' ]  ==  'XOne' ]
+
+
+promedio_puntaje_usuario_xbox_one  =  xbox [ 'puntaje_usuario' ] .mean ( )
+
+imprimir ( promedio_puntuación_usuario_xbox_one )
+4.805263157894737
+pc  =  juegos [ juegos [ 'plataforma' ]  ==  'PC' ]
+
+
+promedio_puntaje_usuario_pc  =  pc [ 'puntaje_usuario' ] .mean ( )
+
+imprimir ( promedio_puntaje_usuario_pc )
+5.5745036572622775
+El resultado indica que se rechaza la hipótesis nula. Esto significa que existe una diferencia estadísticamente significativa entre las calificaciones promedio de los usuarios de Xbox One y PC. Específicamente, las calificaciones promedio de PC son significativamente más altas que las de Xbox One.
+
+Se uso para probar esta hipótesis una prueba para comparar los medios de dos grupos.
+
+Hipotesis Nula (H0): Las calificaciones promedio de los usuarios para los géneros de Acción y Deportes son diferentes.
+
+Hipotesis Alternativa (H1): Las calificaciones promedio de los usuarios para los géneros de Acción y Deportes no son diferentes.
+
+accion =  juegos [ juegos [ 'género' ]  ==  'Acción' ] 
+deporte  =  juegos [ juegos [ 'género' ]  ==  'Deportes' ]
+
+resultados  =  sts . ttest_ind ( accion [ 'puntaje_usuario' ],  deporte [ 'puntaje_usuario' ])
+
+
+imprimir ( 'valor p:' , resultados . pvalue )
+
+si  resultados . pvalue  <  alpha  : 
+    print ( "Rechazamos la hipótesis nula" ) 
+else : 
+    print ( "No podemos rechazar la hipótesis nula" )
+Valor p: 7.492568776804778e-09
+Rechazamos la hipótesis nula
+accion  =  juegos [ juegos [ 'genero' ]  ==  'Accion' ]
+
+
+promedio_user_score_accion  =  acción [ 'user_score' ] . significar ()
+
+imprimir ( promedio_user_score_accion )
+3.833202298155427
+deporte  =  juegos [ juegos [ 'género' ]  ==  'Deportes' ]
+
+
+promedio_puntuacion_usuario_deporte  =  deporte [ 'puntuacion_usuario' ] .mean ( )
+
+imprimir ( promedio_user_score_sport )
+3.2586730268863833
+Se utiliza para probar esta hipótesis una prueba para comparar los medios de dos grupos.
+
+Y como resultado, podemos concluir con un alto grado de confianza que las calificaciones promedio de los usuarios para los géneros de Acción y Deportes no son significativamente diferentes.
+
+Conclusión general
+Luego del análisis de los datos se puede concluir varias cosas, primero las plataformas como PS2, Xbox 360 y PS3 han dominado el mercado en términos de ventas totales. Sin embargo, se observa una clara evolución con el surgimiento de nuevas consolas como PS4 y Xbox One.
+
+Por otro lado el mercado de videojuegos ha experimentado un crecimiento significativo en las últimas décadas, con picos y valles asociados a lanzamientos importantes y cambios tecnológicos. Así mismo, los géneros de acción y deportes son los más populares en términos de ventas, aunque la preferencia puede variar según la región.
+
+Existe una cierta evaluación entre las evaluaciones de los críticos y las ventas, pero no es una relación perfecta. Otros factores como el marketing y las tendencias de la industria también influyen y por último las preferencias de los jugadores varían significativamente entre las diferentes regiones. Por ejemplo, los juegos de rol son más populares en Japón, mientras que los juegos de acción son más populares en Norteamérica y Europa.
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
