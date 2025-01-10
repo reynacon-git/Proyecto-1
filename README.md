@@ -1,2 +1,7 @@
-# Proyecto-1
-Forma parte del programa educativo: Analisis para tienda online Ice que vende videojuegos, identificar patrones que determinen exito para detectar proyectos prometedores y planificar campañas publicitarias
+# Ice
+Plataforma de venta de consolas y video juegos online, para este proyecto el objetivo fue identificar patrones que determinen si un juego tiene éxito. Con la finalidad de detectar proyectos prometedores y planificar campañas publicitarias. Identifique los juegos exitosos dependiendo de la zona geográfica, las plataformas más vendidas, los géneros más vendidos. 
+
+Herramientas que use Python (pandas,  numpy, scipy , matplotlib, seaborn , math), analisis estadistico, procesamiento de datos, análisis exploratorio.
+
+Como conclusión del analisis, obtuve que las plataformas como PS2, Xbox 360 y PS3 han dominado el mercado en términos de ventas totales. El mercado de videojuegos ha experimentado un crecimiento significativo en las últimas décadas, con picos y valles asociados a lanzamientos importantes y cambios tecnológicos.  Asi mismo, los géneros de acción y deportes son los más populares en términos de ventas, aunque la preferencia puede variar según la región. Existe una cierta correlación entre las puntuaciones de los críticos y las ventas, pero no es una relación perfecta. 
+Otros factores como el marketing y las tendencias de la industria también influyen y por ultimo las preferencias de los jugadores varían significativamente entre las diferentes regiones. Por ejemplo, los juegos de rol son más populares en Japón, mientras que los juegos de acción son más populares en Norteamérica y Europa.
